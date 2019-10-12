@@ -48,7 +48,7 @@ namespace LoginAndRegistration.Controllers
                 dbContext.Add(newUser);
                 dbContext.SaveChanges();
                 // Log New User in directly after successful registration
-                HttpContext.Session.SetInt32("LoggedIn", 1);
+                HttpContext.Session.SetString("LoginUserEmail", newUser.Email);
                 return RedirectToAction("SuccessPage");
             }
             return View("Index");
@@ -88,7 +88,7 @@ namespace LoginAndRegistration.Controllers
                     return View("Login");
                 }
                 // Put User in session if everything is valid
-                HttpContext.Session.SetInt32("LoggedIn", 1);
+                HttpContext.Session.SetString("LoginUserEmail", userSubmission.Email);
                 return RedirectToAction("SuccessPage");
             }
             return View("Login");
@@ -98,12 +98,12 @@ namespace LoginAndRegistration.Controllers
         [HttpGet("success")]
         public IActionResult SuccessPage()
         {
-            int? LoggedUser = HttpContext.Session.GetInt32("LoggedIn");
-            if(LoggedUser == 1)
+            string UserSubmissionEmail = HttpContext.Session.GetString("LoginUserEmail");
+            if(UserSubmissionEmail == null)
             {
-                return View("Success");
+                return RedirectToAction("LoginPage");
             }
-            return RedirectToAction("LoginPage");
+            return View("Success");
         }
 
         [HttpGet("logout")]
